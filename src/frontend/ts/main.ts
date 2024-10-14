@@ -1,6 +1,7 @@
 class Main implements EventListenerObject {
     private nombre: string = "matias";
     private users: Array<Usuario> = new Array();
+    private devices: Array<Device> = [];
 
     constructor() {
         this.users.push(new Usuario('mramos', '123132'));
@@ -21,7 +22,20 @@ class Main implements EventListenerObject {
     }
 
     handleEvent(object: Event): void {
+        const elementId = (<HTMLElement>object.target).id;
 
+        // Handler State switch
+        if (elementId.startsWith("cb_")) {
+            // Change state Switch
+            let inputElement = <HTMLInputElement>object.target;
+            let deviceId = parseInt(inputElement.getAttribute("idBd")!);
+            let newState = inputElement.checked;
+
+            this.actualizarEstadoDispositivo(deviceId, newState);
+            return;
+        }
+
+        // Others handlers
         const handlers: { [key: string]: () => void} = {
             'btn': () => {
                 let divLogin = this.recuperarElemento("divLogin");
@@ -29,18 +43,29 @@ class Main implements EventListenerObject {
             },
             'btnBuscar': () => this.buscarDevices(),
             'btnShowAddDevice': () => {
-                let divAddDevice = this.recuperarElemento("divAddDevice");
-                divAddDevice.hidden = false;
+                let modalElem = document.getElementById('addDeviceModal');
+                if (modalElem){
+                    let modalInstance = M.Modal.getInstance(modalElem);
+                    if (modalInstance) {
+                        modalInstance.open();
+                    
+                    // Clean modal data
+                    (<HTMLInputElement>document.getElementById("nameDevice")).value = "";
+                    (<HTMLInputElement>document.getElementById("descriptionDevice")).value = "";
+                    (<HTMLInputElement>document.getElementById("typeDevice")).value = "";
+                    (<HTMLInputElement>document.getElementById("stateDevice")).checked = false;
+                    } else {
+                        console.error("No se pudo inicializar el modal para agregar dispositivo");
+                    }
+                }
             },
-            'btnAddDevice': () => {
-                let idDispositivo: number = Number(this.recuperarElemento("idDevice").value);
+            'btnAddDevice': () => {                
                 let nombreDispositivo: string = this.recuperarElemento("nameDevice").value;
                 let descriptionDispositivo: string = this.recuperarElemento("descriptionDevice").value;
                 let tipoDispositivo: number = Number(this.recuperarElemento("typeDevice").value);
                 let estadoDispositivo: boolean = Boolean(this.recuperarElemento("stateDevice").checked);
                 
                 let newDevice = {
-                    id: idDispositivo,
                     name: nombreDispositivo,
                     description: descriptionDispositivo,
                     type:  tipoDispositivo,
@@ -52,11 +77,19 @@ class Main implements EventListenerObject {
                 let xmlHttp = new XMLHttpRequest();
                 xmlHttp.open("POST", "http://localhost:8000/device/new", true);
                 xmlHttp.setRequestHeader("Content-Type", "application/json");
-                
-                xmlHttp.onreadystatechange = function() {
+
+                xmlHttp.onreadystatechange = () => {
                     if (xmlHttp.readyState === 4) {
                         if (xmlHttp.status === 200) {
                             console.log("Dispositivo agregado exitosamente", xmlHttp.responseText);
+
+                            // Close modal
+                            let modalElem = document.getElementById('addDeviceModal');
+                            let modalInstance = M.Modal.getInstance(modalElem);
+                            if (modalInstance) {
+                                modalInstance.close();
+                            }
+
                         } else {
                             console.error("Error en la solicitud", xmlHttp.responseText);
                         }
@@ -64,9 +97,8 @@ class Main implements EventListenerObject {
                 };
 
                 xmlHttp.send(JSON.stringify(newDevice));
-
-                let divAddDevice = this.recuperarElemento("btnAddDevice");
-                divAddDevice.hidden = true;
+                // Update list devices
+                this.buscarDevices();
             },
             'btnLogin': () => {
                 console.log("login")
@@ -91,6 +123,8 @@ class Main implements EventListenerObject {
             }
         };
 
+        
+
         const handler = handlers[(<HTMLElement>object.target).id];
         if (handler) {
             handler();
@@ -98,134 +132,6 @@ class Main implements EventListenerObject {
             console.error("No se encontro un manejador para el evento")
         }
     }
-
-/*
-        let idDelElemento = (<HTMLElement>object.target).id;
-        console.log("idDeElemento: " + idDelElemento)
-
-        if (idDelElemento == 'btn') {
-            let divLogin = this.recuperarElemento("divLogin");
-            divLogin.hidden = false;
-        } else if (idDelElemento === 'btnBuscar') {
-            console.log("Buscando!")
-            this.buscarDevices();
-
-        } else if (idDelElemento === 'btnShowAddDevice') {
-            let divAddDevice = this.recuperarElemento("divAddDevice");
-            divAddDevice.hidden = false;
-        } else if (idDelElemento === 'btnAddDevice'){
-
-            let idDispositivo: number = Number(this.recuperarElemento("idDevice").value);
-            let nombreDispositivo: string = this.recuperarElemento("nameDevice").value;
-            let descriptionDispositivo: string = this.recuperarElemento("descriptionDevice").value;
-            let tipoDispositivo: number = Number(this.recuperarElemento("typeDevice").value);
-            let estadoDispositivo: boolean = Boolean(this.recuperarElemento("stateDevice").checked);
-            
-            let newDevice = {
-                id: idDispositivo,
-                name: nombreDispositivo,
-                description: descriptionDispositivo,
-                type:  tipoDispositivo,
-                state: estadoDispositivo
-            };
-            console.log(newDevice)
-            // Device newDevice = new Device (idDispositivo, nombreDispositivo, descriptionDispositivo, estadoDispositivo, tipoDispositivo)
-
-            let xmlHttp = new XMLHttpRequest();
-            xmlHttp.open("POST", "http://localhost:8000/device/new", true);
-            xmlHttp.setRequestHeader("Content-Type", "application/json");
-            
-            xmlHttp.onreadystatechange = function() {
-                if (xmlHttp.readyState === 4) {
-                    if (xmlHttp.status === 200) {
-                        console.log("Dispositivo agregado exitosamente", xmlHttp.responseText);
-                    } else {
-                        console.error("Error en la solicitud", xmlHttp.responseText);
-                    }
-                }
-            };
-
-            xmlHttp.send(JSON.stringify(newDevice));
-
-            let divAddDevice = this.recuperarElemento("btnAddDevice");
-            divAddDevice.hidden = true;
-
-        } else if (idDelElemento === 'btnLogin') {
-            console.log("login")
-            let iUser = this.recuperarElemento("userName");
-            let iPass = this.recuperarElemento("userPass");
-            let usuarioNombre: string = iUser.value;
-            let usuarioPassword: string = iPass.value;
-            
-            if (usuarioNombre.length >= 4 && usuarioPassword.length >= 6) {
-                console.log("Voy al servidor... ejecuto consulta")
-                let usuario: Usuario = new Usuario(usuarioNombre, usuarioPassword);
-                let checkbox = this.recuperarElemento("cbRecor");
-                
-                console.log(usuario, checkbox.checked);
-                iUser.disabled = true;
-                (<HTMLInputElement>object.target).disabled = true;
-                let divLogin = this.recuperarElemento("divLogin");
-                divLogin.hidden = true;
-            } else {
-                alert("El usuario o la contraseña son icorrectas");
-            }
-        } else if (idDelElemento == 'btnPost') {
-            let xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = () => {
-                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                    console.log("se ejecuto el post", xmlHttp.responseText);
-                }
-            }
-           
-            xmlHttp.open("POST", "http://localhost:8000/usuario", true);
-            
-            xmlHttp.setRequestHeader("Content-Type", "application/json");
-            xmlHttp.setRequestHeader("otracosa", "algo");
-            
-
-            let json = { name: 'mramos' };
-            xmlHttp.send(JSON.stringify(json));
-
-
-        } else if (idDelElemento == 'btnAdd') {
-            let xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = () => {
-                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                    console.log("se ejecuto el post", xmlHttp.responseText);
-                }
-            }
-           
-            xmlHttp.open("POST", "http://localhost:8000/usuario", true);
-            
-            xmlHttp.setRequestHeader("Content-Type", "application/json");
-            xmlHttp.setRequestHeader("otracosa", "algo");
-            
-
-            let json = { name: 'mramos' };
-            xmlHttp.send(JSON.stringify(json));
-
-
-        } else {
-            let input = <HTMLInputElement>object.target;
-            alert(idDelElemento.substring(3) + ' - ' + input.checked);
-            let prenderJson = { id: input.getAttribute("idBd"), status: input.checked }
-            let xmlHttpPost = new XMLHttpRequest();
-            
-            xmlHttpPost.onreadystatechange = () => {
-                if (xmlHttpPost.readyState === 4 && xmlHttpPost.status === 200) {
-                    let json = JSON.parse(xmlHttpPost.responseText);
-                    alert(json.id);
-                }                
-            }
-
-            xmlHttpPost.open("POST", "http://localhost:8000/device", true);
-            xmlHttpPost.setRequestHeader("Content-Type","application/json")
-            xmlHttpPost.send(JSON.stringify(prenderJson));
-        }
-        
-    }
-*/
 
     private buscarDevices(): void {
         let xmlHttp = new XMLHttpRequest();
@@ -242,18 +148,25 @@ class Main implements EventListenerObject {
                         listaDevices += `
                         <li class="collection-item avatar">
                             <img src="./static/images/lightbulb.png" alt="" class="circle">
-                            <span class="title">${item.name}</span>
-                            <p>${item.description} 
-                            </p>
-                            <div class="secondary-content">
+                            <div style="flex-grow: 1; margin-left: 15px;">
+                                <span class="title" style="font-weight: bold;">${item.name}</span>
+                                <p>${item.description}</p>
                                 <div class="switch">
                                     <label>
-                                        Off
-                                        <input idBd="${item.id}" id="cb_${item.id}" types="checkbox" ${item.state ? 'checked': ''}>
+                                        Off`;
+                                        if (item.state) {
+                                            listaDevices +=`<input idBd="${item.id}" id="cb_${item.id}" type="checkbox" checked>`
+                                        } else {
+                                            listaDevices +=`<input idBd="${item.id}"  name="chk" id="cb_${item.id}" type="checkbox">`
+                                        }
+                                        listaDevices +=`
+
                                         <span class="lever"></span>
                                         On
                                     </label>
                                 </div>
+                            </div>
+                            <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 5px;">
                                 <button id="edit_${item.id}" class="btn-small waves-effect waves-light blue" style="margin-left:10px;">Editar</button>
                                 <button id="delete_${item.id}" class="btn-small waves-effect waves-light red" style="margin-left:10px;">Eliminar</button>
                             </div>
@@ -306,47 +219,134 @@ class Main implements EventListenerObject {
                 }
             };
 
-            xmlHttp.open("DELETE", "http://localhost:8000/device/${id}", true);
+            xmlHttp.open("DELETE", `http://localhost:8000/device/${id}`, true);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.send();
         }
     }
 
     private editarDevice(id: number): void {
-        let nombre = prompt("Ingrese el nuevo nombre del dispositivo");
-        let descripcion = prompt("Ingrese la nueva descripción del dispositivo");
-        let estado = confirm("¿Está encendido el dispositivo? Aceptar= Si, Cancelar= No");
+        // Get modal
+        let modalElem = document.getElementById('editDeviceModal');
+        let modalInstance = M.Modal.getInstance(modalElem);
 
-        if (nombre && descripcion) {
-            let updatedDevice = {
-                name: nombre,
-                descripcion: descripcion,
-                state: estado ? 1 : 0
-            };
+        // Complete info
+        let nombreInput= <HTMLInputElement>this.recuperarElemento("editNameDevice");
+        let descriptionInput = <HTMLInputElement>this.recuperarElemento("editDescriptionDevice");
+        let tipoInput = <HTMLInputElement>this.recuperarElemento("editTypeDevice");
+        let estadoCheckbox = <HTMLInputElement>this.recuperarElemento("editStateDevice");
+        
+        let dispositivo = this.obtenerDispositivoPorId(id);
 
-            let xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = () => {
-                if (xmlHttp.readyState == 4) {
-                    if (xmlHttp.status == 204) {
-                        console.log("Dispositivo actualizado exitosamente");
-                        this.buscarDevices(); // Try again search devices
-                    } else {
-                        console.error("Error al actualizar", xmlHttp.responseText);
-                    }
-                }
-            };
-
-            xmlHttp.open("PUT", "http://localhost:8000/device/state", true);
-            xmlHttp.setRequestHeader("Content-Type", "application/json");
-            updatedDevice["id"] = id;
-            xmlHttp.send(JSON.stringify(updatedDevice));
-        } else {
-            alert("Los campos son obligatorios");
+        if (dispositivo) {
+            nombreInput.value = dispositivo.name;
+            descriptionInput.value = dispositivo.description;
+            tipoInput.value = dispositivo.type.toString();
+            estadoCheckbox.checked = dispositivo.state;
         }
+        
+        // Update labels
+        M.updateTextFields();
+
+        // Open modal
+        modalInstance.open();
+
+        // Add event to save changes
+        let btnGuardar = this.recuperarElemento("saveEditDevice");
+        btnGuardar.onclick = () => {
+            this.guardarCambiosDispositivo(id);
+        };
     }
+
+    private obtenerDispositivoPorId(id: number): Device | undefined {
+        // Share device
+        let dispositivo = this.devices.find(device => device.id === id);
+        if (!dispositivo) {
+            console.error(`Dispositivo con ID ${id} no encontrado`);
+        }
+        return dispositivo;
+    }
+
+    private guardarCambiosDispositivo(id: number): void {
+        let nombre= (<HTMLInputElement>this.recuperarElemento("editNameDevice")).value;
+        let descripcion = (<HTMLInputElement>this.recuperarElemento("editDescriptionDevice")).value;
+        let tipo = parseInt((<HTMLInputElement>this.recuperarElemento("editTypeDevice")).value);
+        let estado = (<HTMLInputElement>this.recuperarElemento("editStateDevice")).checked;
+
+        // Validated with inputs
+        if (!nombre || !descripcion || isNaN(tipo)) {
+            alert("Los campos nombre, descripción y tipo son obligatorios.");
+            return;
+        }
+
+        // Create object
+        let updatedDevice = {
+            id: id,
+            name: nombre,
+            description: descripcion,
+            type: tipo,
+            state: estado ? 1 : 0
+        };
+
+        console.log("Datos enviados:", updatedDevice);
+
+        // XML Request
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = () => {
+            if (xmlHttp.readyState == 4) {
+                if (xmlHttp.status == 204) {
+                    console.log("Dispositivo actualizado exitosamente");
+                    this.buscarDevices(); // Intentar buscar dispositivos nuevamente
+                } else {
+                    console.error("Error al actualizar", xmlHttp.responseText);
+                }
+            }
+        };
+
+        xmlHttp.open("PUT", "http://localhost:8000/device/state", true);
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.send(JSON.stringify(updatedDevice));
+    }
+
+    private actualizarEstadoDispositivo(deviceId: number, newState: boolean): void {
+        let updatedDevice = {
+            id: deviceId,
+            state: newState ? 1 : 0
+        };
+        
+        console.log("Actualizando estado:", updatedDevice);
+        
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = () => {
+            if (xmlHttp.readyState == 4) {
+                if (xmlHttp.status == 204) {
+                    console.log("Estado del dispositivo actualizado exitosamente");
+                    this.buscarDevices(); // Intentar buscar dispositivos nuevamente para refrescar la lista
+                } else {
+                    console.error("Error al actualizar el estado del dispositivo", xmlHttp.responseText);
+                }
+            }
+        };
+
+        // Realizar una solicitud PUT solo con el nuevo estado
+        xmlHttp.open("PUT", `http://localhost:8000/device/states`, true);
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.send(JSON.stringify(updatedDevice));
+
+    }   
+    
 }
+
+
+
 window.addEventListener('load', () => {
     
     let main: Main = new Main();
     
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    let modals = document.querySelectorAll('.modal');
+    M.Modal.init(modals);
 });
 

@@ -3,10 +3,19 @@ body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
+    font-family: 'Roboto Flex', sans-serif;
 }
 
 main {
     flex: 1 0 auto;
+}
+
+h1, h2, h3 {
+    font-weight: 700;
+}
+
+h4 {
+    font-weight: 600;
 }
 
 .title{
@@ -16,4 +25,14 @@ main {
 }
 .parafo{
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.btn {
+    background-color: #009CB0;
+    color: white;
+}
+
+.btn-large {
+    font-size: 16px;
+    padding: 10px 20px;
 }

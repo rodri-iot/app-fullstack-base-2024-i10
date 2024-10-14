@@ -54,15 +54,25 @@ app.get('/device/:id', (req,res) => {
 // Insert a new device
 app.post('/device/new', (req,res) => {
     console.log(req.body)
-    const { id, name, description, state, type } = req.body;
+    const { name, description, state, type } = req.body;
     if (name && description && state !== undefined && type !== undefined) {
-        // SQL query with prepared statements to prevent SQL injection
-        const query = "INSERT INTO Devices (id, name, description, state, type) VALUES (?, ?, ?, ?, ?)";
-        utils.query(query, [id, name, description, state, type], (error, respuesta, fields) => {
+        // Verify if ID exist
+        const checkQuery = "SELECT * FROM Devices WHERE id = ?";
+        utils.query(checkQuery, [req.body.id], (error, result) => {
             if (error) {
                 handleSQLError(res, error);
+            } else if (result.length > 0) {
+                res.status(409).json({ error: "El ID ya existe" });
             } else {
-                res.status(201).json({ mensaje: "Dispositivo creado exitosamente!"});
+                // SQL query with prepared statements to prevent SQL injection
+                const insertQuery = "INSERT INTO Devices (name, description, state, type) VALUES (?, ?, ?, ?)";
+                utils.query(insertQuery, [name, description, state, type], (error, respuesta, fields) => {
+                    if (error) {
+                        handleSQLError(res, error);
+                    } else {
+                        res.status(201).json({ mensaje: "Dispositivo creado exitosamente!"});
+                    }
+                });
             }
         });
     } else {
@@ -78,6 +88,25 @@ app.put('/device/state', (req, res) => {
         // SQL query with prepared parameters
         const query = "UPDATE Devices SET state = ?, name = ?, description = ? WHERE id = ?";        
         utils.query(query, [state, name, description, id], (error) => {
+            if (error) {
+                handleSQLError(res, error);
+            } else {
+                res.status(204).send(); // 204 No Content, with out response
+            }
+        });
+    } else {
+        // Respond with an error if data is missing
+        res.status(400).json({ error: "Falta el estado para actualizar" });
+    }
+});
+
+app.put('/device/states', (req, res) => {
+    const { id, state } = req.body;
+    // Input validation
+    if (id && state !== undefined) {
+        // SQL query with prepared parameters
+        const query = "UPDATE Devices SET state = ? WHERE id = ?";        
+        utils.query(query, [state, id], (error) => {
             if (error) {
                 handleSQLError(res, error);
             } else {

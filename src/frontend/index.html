@@ -6,10 +6,20 @@
       <link type="text/css" rel="stylesheet" href="./static/css/styles.css"  media="screen,projection"/>
       <script type="text/javascript" src="./static/js/materialize.min.js"></script>
       <script src="js/user.js"></script>
-      <script type="text/javascript" src="js/main.js"></script>
-      
+      <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- Materialize CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="./static/css/materialize.min.css" media="screen,projection" />
+
+    <!-- JavaScript de Materialize debe cargarse antes que tu script -->
+    <script type="text/javascript" src="./static/js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     </head>
     <body>
 
@@ -26,11 +36,11 @@
             <!-- Page Body -->
             <div class="container">
                 <br/>
-                <h1 id="tit">texto</h1>
+                <h1 id="tit">Bienvenido a</h1>
                 <h3>My Smart Home!</h3>
               
                 <br/>
-                <input id="txt" type="text" value="Loggin"/>
+                <input id="txt" type="text" value="Usuario: mramos"/>
                 <div class="row">
                     <div class="input-field col s12 m12 l6 xl6"  hidden id="divLogin">
                         <div class="row">
@@ -74,48 +84,74 @@
                     
                         <button id="btn" class="btn waves-effect waves-light button-view"  name="hello_button">PRESS ME</button>
                         <button id="btnBuscar" class="btn waves-effect waves-light button-view"  name="hello_button">Buscar</button>
-                        <button id="btnShowAddDevice" class="btn waves-effect waves-light button-view"  name="hello_button">Agregar Dispositivo</button>
-                        <button id="btnPost" class="btn waves-effect waves-light button-view"  name="hello_button">Ejecutar POST</button>
+                        <button id="btnShowAddDevice" class="btn waves-effect waves-light button-view"  name="hello_button">Nuevo Dispositivo</button>
+                        <button id="btnPost" class="btn waves-effect waves-light button-view"  name="hello_button" style="display: none;">Ejecutar POST</button>
                     </div>
                 </div>
+
+        <!-- Modal Structure Update Device-->
+        <div id="editDeviceModal" class="modal">
+            <div class="modal-content">
+                <h4>Editar Dispositivo</h4>
+                <div class="input-field">
+                    <input id="editNameDevice" type="text">
+                    <label for="editNameDeviceModal">Nombre</label>
+                </div>
+                <div class="input-field">
+                    <input id="editDescriptionDevice" type="text">
+                    <label for="editDescriptionDeviceModal">Descripcion</label>
+                </div>
+                <div class="input-field">
+                    <input id="editTypeDevice" type="text">
+                    <label for="editTypeDeviceModal">Tipo</label>
+                </div>
+                <div class="input-field">
+                    <p>
+                        <label>
+                            <input type="checkbox" id="editStateDevice" />
+                            <span>Encendido</span>
+                        </label>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+                <button id="saveEditDevice" class="btn waves-effect waves-light">Guardar Cambios</button>
+            </div>
+        </div>
+
+        <!-- Modal Structure Add Device-->
+        <div id="addDeviceModal" class="modal">
+            <div class="modal-content">
+                <h4>Agregar Dispositivo</h4>
                 <div class="row">
-                    <div class="input-field col s12 m12 l6 xl6" hidden id="divAddDevice">
-                        <div class="row">
-                            <h3>Agregar Dispositivo</h3>
-                            <div class="input-field col s6 m6 l6 x16">
-                                <input placeholder="id" id="idDevice" type="number">
-                                <label for="idDevice">ID Dispositivo</label>
-                            </div>
-                            <div class="input-field col s6 m6 l6 x16">
-                                <input placeholder="name" id="nameDevice" type="text">
-                                <label for="nameDevice">Nombre del dispositivo</label>
-                            </div>
-                            <div class="input-field col s6 m6 l6 x16">
-                                <input placeholder="descriptionDevice" id="descriptionDevice" type="text">
-                                <label for="descriptionDevice">Descripcion</label>
-                            </div>
-                            <div class="input-field col s6 m6 l6 x16">
-                                <input placeholder="typeDevice" id="typeDevice" type="number">
-                                <label for="typeDevice">Tipo</label>
-                            </div>
-                            <div class="input-field col s6 m6 l6 x16">
-                                <p>
-                                    <input type="checkbox" id="stateDevice">
-                                    <span>Estado</span>
-                                </p>
-                            </div>
-                            
-                            <div>
-                                <button id="btnAddDevice" class="btn waves-effect waves-light" type="button">
-                                    Agregar Dispositivo
-                                    <i class="material-icons left">phone_iphone</i>
-                                </button>
-                            </div>
-                        </div>
+                    <div class="input-field col s12">
+                        <input id="nameDevice" type="text" class="validate">
+                        <label for="nameDevice">Nombre del dispositivo:</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <input id="descriptionDevice" type="text" class="validate">
+                        <label for="descriptionDevice">Descripcion</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <input id="typeDevice" type="text">
+                        <label for="typeDevice">Tipo</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <label>
+                            <input type="checkbox" id="stateDevice" />
+                            <span>Estado</span>
+                        </label>
                     </div>
                 </div>
-            </div>	
-        </main>
+            </div>
+            <div class="modal-footer">
+                <button id="btnAddDevice" class="modal-close btn waves-effect waves-light" type="button">Agregar Dispositivo</button>
+            </div>
+        </div>
+
+
+
 		<!-- Page Footer -->
         <footer class="page-footer" style="background-color:#124580">
             <div class="container">
