@@ -21,6 +21,85 @@ class Main implements EventListenerObject {
     }
 
     handleEvent(object: Event): void {
+
+        const handlers: { [key: string]: () => void} = {
+            'btn': () => {
+                let divLogin = this.recuperarElemento("divLogin");
+                divLogin.hidden = false;
+            },
+            'btnBuscar': () => this.buscarDevices(),
+            'btnShowAddDevice': () => {
+                let divAddDevice = this.recuperarElemento("divAddDevice");
+                divAddDevice.hidden = false;
+            },
+            'btnAddDevice': () => {
+                let idDispositivo: number = Number(this.recuperarElemento("idDevice").value);
+                let nombreDispositivo: string = this.recuperarElemento("nameDevice").value;
+                let descriptionDispositivo: string = this.recuperarElemento("descriptionDevice").value;
+                let tipoDispositivo: number = Number(this.recuperarElemento("typeDevice").value);
+                let estadoDispositivo: boolean = Boolean(this.recuperarElemento("stateDevice").checked);
+                
+                let newDevice = {
+                    id: idDispositivo,
+                    name: nombreDispositivo,
+                    description: descriptionDispositivo,
+                    type:  tipoDispositivo,
+                    state: estadoDispositivo
+                };
+                console.log(newDevice)
+                // Device newDevice = new Device (idDispositivo, nombreDispositivo, descriptionDispositivo, estadoDispositivo, tipoDispositivo)
+
+                let xmlHttp = new XMLHttpRequest();
+                xmlHttp.open("POST", "http://localhost:8000/device/new", true);
+                xmlHttp.setRequestHeader("Content-Type", "application/json");
+                
+                xmlHttp.onreadystatechange = function() {
+                    if (xmlHttp.readyState === 4) {
+                        if (xmlHttp.status === 200) {
+                            console.log("Dispositivo agregado exitosamente", xmlHttp.responseText);
+                        } else {
+                            console.error("Error en la solicitud", xmlHttp.responseText);
+                        }
+                    }
+                };
+
+                xmlHttp.send(JSON.stringify(newDevice));
+
+                let divAddDevice = this.recuperarElemento("btnAddDevice");
+                divAddDevice.hidden = true;
+            },
+            'btnLogin': () => {
+                console.log("login")
+                let iUser = this.recuperarElemento("userName");
+                let iPass = this.recuperarElemento("userPass");
+                let usuarioNombre: string = iUser.value;
+                let usuarioPassword: string = iPass.value;
+                
+                if (usuarioNombre.length >= 4 && usuarioPassword.length >= 6) {
+                    console.log("Voy al servidor... ejecuto consulta")
+                    let usuario: Usuario = new Usuario(usuarioNombre, usuarioPassword);
+                    let checkbox = this.recuperarElemento("cbRecor");
+                    
+                    console.log(usuario, checkbox.checked);
+                    iUser.disabled = true;
+                    (<HTMLInputElement>object.target).disabled = true;
+                    let divLogin = this.recuperarElemento("divLogin");
+                    divLogin.hidden = true;
+                } else {
+                    alert("El usuario o la contraseña son icorrectas");
+                }
+            }
+        };
+
+        const handler = handlers[(<HTMLElement>object.target).id];
+        if (handler) {
+            handler();
+        } else {
+            console.error("No se encontro un manejador para el evento")
+        }
+    }
+
+/*
         let idDelElemento = (<HTMLElement>object.target).id;
         console.log("idDeElemento: " + idDelElemento)
 
@@ -35,14 +114,13 @@ class Main implements EventListenerObject {
             let divAddDevice = this.recuperarElemento("divAddDevice");
             divAddDevice.hidden = false;
         } else if (idDelElemento === 'btnAddDevice'){
-            console.log("Paso 1");
+
             let idDispositivo: number = Number(this.recuperarElemento("idDevice").value);
             let nombreDispositivo: string = this.recuperarElemento("nameDevice").value;
             let descriptionDispositivo: string = this.recuperarElemento("descriptionDevice").value;
             let tipoDispositivo: number = Number(this.recuperarElemento("typeDevice").value);
             let estadoDispositivo: boolean = Boolean(this.recuperarElemento("stateDevice").checked);
             
-            console.log("Paso 2")
             let newDevice = {
                 id: idDispositivo,
                 name: nombreDispositivo,
@@ -66,7 +144,7 @@ class Main implements EventListenerObject {
                     }
                 }
             };
-            console.log("Paso 3")
+
             xmlHttp.send(JSON.stringify(newDevice));
 
             let divAddDevice = this.recuperarElemento("btnAddDevice");
@@ -147,6 +225,7 @@ class Main implements EventListenerObject {
         }
         
     }
+*/
 
     private buscarDevices(): void {
         let xmlHttp = new XMLHttpRequest();

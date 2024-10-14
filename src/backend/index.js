@@ -17,6 +17,7 @@ app.use(express.static('/home/node/app/static/'));
 
 // Function to handle SQL errors
 function handleSQLError(res, error) {
+    console.error('Error en la consulta SQL:', error);
     res.status(409).send({ error: error.sqlMessage });
 }
 
@@ -75,8 +76,8 @@ app.put('/device/state', (req, res) => {
     if (req.body.state !== undefined) {
         // SQL query with prepared parameters
         const query = "UPDATE Devices SET state = ? WHERE id = ?";        
-        utils.query(query, [req.body.state, req.params.id], (err) => {
-            if (err) {
+        utils.query(query, [req.body.state, req.params.id], (error) => {
+            if (error) {
                 handleSQLError(res, error);
             } else {
                 res.status(204).send(); // 204 No Content, with out response
@@ -92,7 +93,7 @@ app.put('/device/state', (req, res) => {
 app.delete('/device/:id', (req, res) => {
     const query = "DELETE FROM Devices WHERE id = ?";
     utils.query(query, [req.params.id], (error) => {
-        if (err){
+        if (error){
             handleSQLError(res, error);
         } else{
             res.status(204).send();
@@ -120,18 +121,16 @@ app.post('/usuario',function(req,res){
 });
 
 app.post('/device/',function(req,res){
-    
-    utils.query("update Devices set state="+req.body.status +" where id="+req.body.id,
-        (err,resp,meta)=>{
-            if(err){
-                console.log(err.sqlMessage)
-                res.status(409).send(err.sqlMessage);
-            }else{
-                res.send("ok "+resp);
+    const query = "UPDATE Devices SET state = ? WHERE id = ?"
+    utils.query(query, [req.body.status, req.body.id], (error, resp) => {
+            if(error){
+                console.log(error.sqlMessage)
+                res.status(409).send(error.sqlMessage);
+            } else{
+                res.send("ok " + resp);
             }
-    })
-    
-})
+    });
+});
 
 
 /*
