@@ -72,11 +72,12 @@ app.post('/device/new', (req,res) => {
 
 // Update the status of a device
 app.put('/device/state', (req, res) => {
+    const { id, state, name, description } = req.body;
     // Input validation
-    if (req.body.state !== undefined) {
+    if (id && state !== undefined) {
         // SQL query with prepared parameters
-        const query = "UPDATE Devices SET state = ? WHERE id = ?";        
-        utils.query(query, [req.body.state, req.params.id], (error) => {
+        const query = "UPDATE Devices SET state = ?, name = ?, description = ? WHERE id = ?";        
+        utils.query(query, [state, name, description, id], (error) => {
             if (error) {
                 handleSQLError(res, error);
             } else {

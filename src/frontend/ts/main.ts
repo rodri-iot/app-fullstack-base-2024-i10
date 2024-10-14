@@ -241,35 +241,40 @@ class Main implements EventListenerObject {
                     for (let item of lista) {
                         listaDevices += `
                         <li class="collection-item avatar">
-                        <img src="./static/images/lightbulb.png" alt="" class="circle">
-                        <span class="title">${item.name}</span>
-                        <p>${item.description} 
-                        </p>
-                        <a href="#!" class="secondary-content">
-                          <div class="switch">
-                              <label>
-                                Off`;
-                        if (item.state) {
-                            listaDevices +=`<input idBd="${item.id}" id="cb_${item.id}" type="checkbox" checked>`
-                        } else {
-                            listaDevices +=`<input idBd="${item.id}"  name="chk" id="cb_${item.id}" type="checkbox">`
-                        }
-                        listaDevices += `      
-                                <span class="lever"></span>
-                                On
-                              </label>
+                            <img src="./static/images/lightbulb.png" alt="" class="circle">
+                            <span class="title">${item.name}</span>
+                            <p>${item.description} 
+                            </p>
+                            <div class="secondary-content">
+                                <div class="switch">
+                                    <label>
+                                        Off
+                                        <input idBd="${item.id}" id="cb_${item.id}" types="checkbox" ${item.state ? 'checked': ''}>
+                                        <span class="lever"></span>
+                                        On
+                                    </label>
+                                </div>
+                                <button id="edit_${item.id}" class="btn-small waves-effect waves-light blue" style="margin-left:10px;">Editar</button>
+                                <button id="delete_${item.id}" class="btn-small waves-effect waves-light red" style="margin-left:10px;">Eliminar</button>
                             </div>
-                      </a>
-                      </li>`
-                     
-                        
+                        </li>`;
                     }
-                    ul.innerHTML = listaDevices;
-                
-                    for (let item of lista) {
-                        let cb = this.recuperarElemento("cb_" + item.id);
-                        cb.addEventListener("click", this);
-                    }
+
+                        ul.innerHTML = listaDevices;
+
+                        // Add events for buttons Edit and Delete
+                        for(let item of lista) {
+                            let btnEditar = this.recuperarElemento("edit_" + item.id);
+                            let btnEliminar = this.recuperarElemento("delete_" + item.id);
+
+                            btnEditar.addEventListener("click", (event) => this.editarDevice(item.id));
+                            btnEliminar.addEventListener("click", (event) => this.eliminarDevice(item.id));
+                        }
+
+                        for (let item of lista) {
+                            let cb = this.recuperarElemento("cb_" + item.id);
+                            cb.addEventListener("click", this);
+                        }
                 } else {
                     alert("ERROR en la consulta");
                 }
@@ -280,12 +285,63 @@ class Main implements EventListenerObject {
         xmlHttp.open("GET", "http://localhost:8000/devices", true);
 
         xmlHttp.send();
-
-        
     }
 
     private recuperarElemento(id: string):HTMLInputElement {
         return <HTMLInputElement>document.getElementById(id);
+    }
+
+    private eliminarDevice(id: number): void {
+        let confirmar = confirm("¿Estas seguro de que deseas eliminar este dispositivo?");
+        if (confirmar) {
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = () => {
+                if (xmlHttp.readyState == 4) {
+                    if (xmlHttp.status == 204) {
+                        console.log("Dispositivo eliminado exitosamente");
+                        this.buscarDevices(); // Try again search devices
+                    } else {
+                        console.error("Error al eliminar", xmlHttp.responseText);
+                    }
+                }
+            };
+
+            xmlHttp.open("DELETE", "http://localhost:8000/device/${id}", true);
+            xmlHttp.send();
+        }
+    }
+
+    private editarDevice(id: number): void {
+        let nombre = prompt("Ingrese el nuevo nombre del dispositivo");
+        let descripcion = prompt("Ingrese la nueva descripción del dispositivo");
+        let estado = confirm("¿Está encendido el dispositivo? Aceptar= Si, Cancelar= No");
+
+        if (nombre && descripcion) {
+            let updatedDevice = {
+                name: nombre,
+                descripcion: descripcion,
+                state: estado ? 1 : 0
+            };
+
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = () => {
+                if (xmlHttp.readyState == 4) {
+                    if (xmlHttp.status == 204) {
+                        console.log("Dispositivo actualizado exitosamente");
+                        this.buscarDevices(); // Try again search devices
+                    } else {
+                        console.error("Error al actualizar", xmlHttp.responseText);
+                    }
+                }
+            };
+
+            xmlHttp.open("PUT", "http://localhost:8000/device/state", true);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            updatedDevice["id"] = id;
+            xmlHttp.send(JSON.stringify(updatedDevice));
+        } else {
+            alert("Los campos son obligatorios");
+        }
     }
 }
 window.addEventListener('load', () => {
