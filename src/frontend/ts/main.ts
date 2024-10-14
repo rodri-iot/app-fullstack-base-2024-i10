@@ -13,15 +13,65 @@ class Main implements EventListenerObject {
         btnLogin.addEventListener('click', this);
         let btnPost = this.recuperarElemento("btnPost");
         btnPost.addEventListener('click', this);
+
+        let btnAddDevice = this.recuperarElemento("btnAddDevice");
+        btnAddDevice.addEventListener('click', this);
+        let btnShowAddDevice = this.recuperarElemento("btnShowAddDevice");
+        btnShowAddDevice.addEventListener('click', this);
     }
+
     handleEvent(object: Event): void {
         let idDelElemento = (<HTMLElement>object.target).id;
+        console.log("idDeElemento: " + idDelElemento)
+
         if (idDelElemento == 'btn') {
             let divLogin = this.recuperarElemento("divLogin");
             divLogin.hidden = false;
         } else if (idDelElemento === 'btnBuscar') {
             console.log("Buscando!")
             this.buscarDevices();
+
+        } else if (idDelElemento === 'btnShowAddDevice') {
+            let divAddDevice = this.recuperarElemento("divAddDevice");
+            divAddDevice.hidden = false;
+        } else if (idDelElemento === 'btnAddDevice'){
+            console.log("Paso 1");
+            let idDispositivo: number = Number(this.recuperarElemento("idDevice").value);
+            let nombreDispositivo: string = this.recuperarElemento("nameDevice").value;
+            let descriptionDispositivo: string = this.recuperarElemento("descriptionDevice").value;
+            let tipoDispositivo: number = Number(this.recuperarElemento("typeDevice").value);
+            let estadoDispositivo: boolean = Boolean(this.recuperarElemento("stateDevice").checked);
+            
+            console.log("Paso 2")
+            let newDevice = {
+                id: idDispositivo,
+                name: nombreDispositivo,
+                description: descriptionDispositivo,
+                type:  tipoDispositivo,
+                state: estadoDispositivo
+            };
+            console.log(newDevice)
+            // Device newDevice = new Device (idDispositivo, nombreDispositivo, descriptionDispositivo, estadoDispositivo, tipoDispositivo)
+
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("POST", "http://localhost:8000/device/new", true);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState === 4) {
+                    if (xmlHttp.status === 200) {
+                        console.log("Dispositivo agregado exitosamente", xmlHttp.responseText);
+                    } else {
+                        console.error("Error en la solicitud", xmlHttp.responseText);
+                    }
+                }
+            };
+            console.log("Paso 3")
+            xmlHttp.send(JSON.stringify(newDevice));
+
+            let divAddDevice = this.recuperarElemento("btnAddDevice");
+            divAddDevice.hidden = true;
+
         } else if (idDelElemento === 'btnLogin') {
             console.log("login")
             let iUser = this.recuperarElemento("userName");
@@ -43,6 +93,24 @@ class Main implements EventListenerObject {
                 alert("El usuario o la contraseña son icorrectas");
             }
         } else if (idDelElemento == 'btnPost') {
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = () => {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                    console.log("se ejecuto el post", xmlHttp.responseText);
+                }
+            }
+           
+            xmlHttp.open("POST", "http://localhost:8000/usuario", true);
+            
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.setRequestHeader("otracosa", "algo");
+            
+
+            let json = { name: 'mramos' };
+            xmlHttp.send(JSON.stringify(json));
+
+
+        } else if (idDelElemento == 'btnAdd') {
             let xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = () => {
                 if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
