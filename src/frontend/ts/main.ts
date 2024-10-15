@@ -1,4 +1,5 @@
 // Main class
+declare var M: any;
 class Main implements EventListenerObject {
     private nombre: string = "matias";
     private users: Array<Usuario> = new Array();
