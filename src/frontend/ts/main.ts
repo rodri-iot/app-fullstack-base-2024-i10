@@ -1,3 +1,4 @@
+// Main class
 class Main implements EventListenerObject {
     private nombre: string = "matias";
     private users: Array<Usuario> = new Array();
@@ -167,8 +168,8 @@ class Main implements EventListenerObject {
                                 </div>
                             </div>
                             <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 5px;">
-                                <button id="edit_${item.id}" class="btn-small waves-effect waves-light blue" style="margin-left:10px;">Editar</button>
-                                <button id="delete_${item.id}" class="btn-small waves-effect waves-light red" style="margin-left:10px;">Eliminar</button>
+                                <button id="edit_${item.id}" class="btn-row btn-small waves-effect waves-light blue" style="margin-left:10px;">Editar</button>
+                                <button id="delete_${item.id}" class="btn-row btn-small waves-effect waves-light red" style="margin-left:10px;">Eliminar</button>
                             </div>
                         </li>`;
                     }

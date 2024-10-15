@@ -1,38 +1,187 @@
-
 body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-    font-family: 'Roboto Flex', sans-serif;
+    display: flex !important;
+    min-height: 100vh !important;
+    flex-direction: column !important;
+    font-family: 'Roboto Flex', sans-serif !important;
 }
 
 main {
-    flex: 1 0 auto;
+    flex: 1 0 auto !important;
 }
 
 h1, h2, h3 {
-    font-weight: 700;
+    font-weight: 700 !important;
 }
 
 h4 {
-    font-weight: 600;
+    font-weight: 600 !important;
 }
 
 .title{
-    color: brown;
-    font-weight: bold;
-    text-align: center;
+    color: brown !important;
+    font-weight: bold !important;
+    text-align: center !important;
 }
-.parafo{
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    
 }
 
 .btn {
-    background-color: #009CB0;
-    color: white;
+    background-color: #0f0caded !important;
+    color: white !important;
+    border-radius: 10px !important;
+    margin: 5px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    border: none !important;
+    box-sizing: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    height: 75px !important;
+    width: 150px;
 }
 
-.btn-large {
+#btnShowAddDevice {
+    background-color: #243A54 !important;
+    color: white !important;
+    border-radius: 30px !important;
+    padding: 12px 20px !important;
+    border: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    height: 5% !important;
+}
+
+#btnShowAddDevice:hover {
+    background-color: #1b2e43 !important;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Red button */
+.btn-red {
+    background-color: #e74c3c !important;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.button-container .btn {
+    background-color: #009CB0;
+    color: white;
+    border-radius: 30px;
+    padding: 12px 25px;
     font-size: 16px;
-    padding: 10px 20px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center !important;
+}
+
+/* Efect hover */
+.button-container .btn:hover {
+    background-color: #006f8a !important; /* Cambiar a un color más oscuro en hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2) !important; /* Aumentar sombra en hover */
+    transform: translateY(-2px) !important; /* Levantar el botón un poco al pasar el mouse */
+}
+
+/* Dashboard */
+.container {
+    max-width: 800px !important;
+    margin: 20px auto !important;
+    padding: 0 15px !important;
+}
+
+.card-device{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+/* Styles for each card device */
+.collection-item {
+    background-color: #ffffff !important;
+    margin: 20px !important;
+
+}
+
+.collection-item:hover {
+    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.15) !important; /* Sombra más intensa al pasar el mouse */
+}
+
+/* Buttons Delete and Edit */
+.btn-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    width: 100%;
+    gap: 10px;
+}
+
+.btn-row {
+    width: 100px;
+    border: 1px;
+    border-radius: 5px;
+    border-color: white;
+}
+
+/* Switch style */
+.switch label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90px; /* Static width for safe align off/on */
+}
+
+.switch label span {
+    margin-left: 10px;
+    margin-right: 10px;
+    color: #666;
+    font-weight: 500;
+}
+
+.switch {
+    margin-right: 20px;
+    text-align: right;
+}
+
+/* Device icon */
+.collection-item .avatar {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.collection-item img {
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+/* Adjust cards devices */
+.collection-item .title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #333 !important;
+}
+
+.collection-item p {
+    margin: 5px 0 !important;
+    color: #666 !important;
+}
+
+/* Others styles */
+.device-info {
+    flex-grow: 1;
+    margin-right: 20px;
 }
