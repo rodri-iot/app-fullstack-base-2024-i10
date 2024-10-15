@@ -15,7 +15,8 @@ Realizando estas tareas vas a a tener una aplicación fullstack IoT del mundo re
 
 En esta imagen podés ver una posible implementación del cliente web que controla los artefactos del hogar.
 
-![architecture](doc/webapp-example-1.png)
+<img width="1658" alt="Screenshot 2024-10-14 at 8 28 31 PM" src="https://github.com/user-attachments/assets/aa570430-eae4-4584-ab61-a36aa0bcf8f2">
+<img width="1648" alt="Screenshot 2024-10-14 at 8 29 39 PM" src="https://github.com/user-attachments/assets/00e69079-1626-4b27-9335-1c2a59c6db72">
 
 ## Comenzando 🚀
 
@@ -158,15 +159,32 @@ En esta sección podés ver los detalles específicos de funcionamiento del cód
 
 ### Agregar un dispositivo
 
-Completá los pasos para agregar un dispositivo desde el cliente web.
+Para agregar un dispositivo, los usuarios deben seguir estos pasos en el cliente web:
+
+1. Hacer clic en el botón **Nuevo Dispositivo** en la parte inferior del dashboard.
+2. Aparece un modal donde se solicita ingresar el **nombre**, **tipo**, **estado** y **descripción** del dispositivo.
+3. Completar el formualario y hacer clic en **Agregar Dispositivo**.
+4. El backend recibe la solicitud para agregar el dispositivo a la base de datos.
+
+El dispositivo aparecerá en el dashboard después de ser agregado exitosamente.
 
 ### Frontend
 
-Completá todos los detalles sobre cómo armaste el frontend, sus interacciones, etc.
+El fronted está desarrollado en HTML, CSS (Materialize y custom styles) y Javascript. A continuación, se detallan las principales interacciones:
+
+- **Tarjetas interactivas:** Cada dispositivo se mmuestra como una tarjeta interactiva con el estado, descripción y un ícono. El usuario web pue controlar el estado, editar o eliminar el dispositivo que se muestra en el dashboard.
+- **Grid Layout:** El diseño está estructurado en unua cuadrícula que se ajusta a diferentes tamaños de pantallas.
+- **Modal:** Utilizado para agregar y actualizar dispositivos, integrado en la interfaz del proyecto.
+- **Eventos de botónes:** Los botones de encendido/apagado están conectados a eventos que envían solicitudes al backend para cambiar el estado del dispositivo.
 
 ### Backend
 
-Completá todos los detalles de funcionamiento sobre el backend, sus interacciones con el cliente web, la base de datos, etc.
+El backend se implementa con **Node.js** y utiliza **Express.js** para gestionar las solicitudes HTTP.
+A continuación se describen sus interacciones con el cliente web y la base de datos:
+
+- **Interacción con el cliente web:** El frontend envía solicitudes 'GET', 'POST' y 'PUT' para obtener, agregar y actualizar dispositivos. El backend responde con el estado actualizado dde los dispositivos en formato JSON.
+- **Base de datos:** El backend interactúa con una base dde datos SQL para almacenar y recuperar los dispositivos IoT. Cada dispositivo tiene un `id`, `nombre`, `estado`, `tipo` y `descripción`.
+- **Autentificación:** El backend cuenta con una autentificación muy básica para los usuarios.
 
 <details><summary><b>Ver los endpoints disponibles</b></summary><br>
 
@@ -192,9 +210,55 @@ Completá todos los endpoints del backend con los metodos disponibles, los heade
 }
 ``` 
 
-</details>
+2) Agregar un nuevo dispositivo
 
-</details>
+Este endpoint permite agregar un nuevo dispositivo
+
+- Método: POST
+- Endpoint: /device/new
+- Headers:
+- Content-Type: application/json
+- Body:
+
+```json
+{
+    "name": "Smart TV",
+    "description": "Living room TV",
+    "status": false,
+    "type": "tv",
+    "consumption": "20 kWh"
+}
+``` 
+**Respuesta**
+```json
+{
+    "status": 201,
+    "message": "Dispositivo creado exitosamente"
+}
+```
+
+3) Actualizar el estado de un dispositivo
+
+Este endpoint permite actualizar el estado (encendido/apagado) de un dispositivo existente.
+
+Método: PUT
+Endpoint: /device/state
+Headers:
+Content-Type: application/json
+Body:
+
+```json
+{
+    "id": 1,
+    "status": true
+}
+
+**Respuesta**
+
+{
+    "status": 204,
+    "message": "Estado del dispositivo actualizado exitosamente"
+}
 
 
 ## Tecnologías utilizadas 🛠️
