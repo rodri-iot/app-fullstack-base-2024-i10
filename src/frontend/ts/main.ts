@@ -1,5 +1,5 @@
 // Main class
-declare var M: any;
+
 class Main implements EventListenerObject {
     private nombre: string = "matias";
     private users: Array<Usuario> = new Array();
@@ -51,11 +51,11 @@ class Main implements EventListenerObject {
                     if (modalInstance) {
                         modalInstance.open();
                     
-                    // Clean modal data
-                    (<HTMLInputElement>document.getElementById("nameDevice")).value = "";
-                    (<HTMLInputElement>document.getElementById("descriptionDevice")).value = "";
-                    (<HTMLInputElement>document.getElementById("typeDevice")).value = "";
-                    (<HTMLInputElement>document.getElementById("stateDevice")).checked = false;
+                        // Clean modal data
+                        (<HTMLInputElement>document.getElementById("nameDevice")).value = "";
+                        (<HTMLInputElement>document.getElementById("descriptionDevice")).value = "";
+                        (<HTMLInputElement>document.getElementById("typeDevice")).value = "";
+                        (<HTMLInputElement>document.getElementById("stateDevice")).checked = false;
                     } else {
                         console.error("No se pudo inicializar el modal para agregar dispositivo");
                     }
@@ -339,8 +339,6 @@ class Main implements EventListenerObject {
     
 }
 
-
-
 window.addEventListener('load', () => {
     
     let main: Main = new Main();
@@ -351,4 +349,3 @@ document.addEventListener('DOMContentLoaded', function() {
     let modals = document.querySelectorAll('.modal');
     M.Modal.init(modals);
 });
-

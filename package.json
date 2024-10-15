@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/materialize-css": "^1.0.14",
+    "mysql": "^2.18.1"
+  }
+}
