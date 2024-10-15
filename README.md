@@ -252,14 +252,16 @@ Body:
     "id": 1,
     "status": true
 }
-
+```
 **Respuesta**
-
+```json
 {
     "status": 204,
     "message": "Estado del dispositivo actualizado exitosamente"
 }
-
+```
+</details>
+</details>
 
 ## Tecnologías utilizadas 🛠️
 
